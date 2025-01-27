@@ -3,7 +3,7 @@
 # For end users:
 # ==============
 # Pull image from registry and run container:
-# $ docker run -it --gpus all --ipc=host --net=host --ulimit memlock=-1 --ulimit stack=67108864 unistuttgartdae/nfdi-demonstrator
+# $ docker run -it --gpus all --ipc=host --net=host unistuttgartdae/nfdi-demonstrator
 #
 # Alternatively, start the container using docker compose:
 # $ docker compose up
