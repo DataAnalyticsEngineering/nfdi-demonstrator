@@ -1,0 +1,20 @@
+services:
+  nfdi-demonstrator:
+    build: .
+    image: unistuttgartdae/nfdi-demonstrator
+    container_name: nfdi-demonstrator
+    network_mode: host  # docker run --net=host
+    ipc: host  # docker run --ipc=host
+    entrypoint: sh -c '/opt/conda/bin/jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root'
+    stdin_open: true  # docker run -i
+    tty: true  # docker run -t
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
