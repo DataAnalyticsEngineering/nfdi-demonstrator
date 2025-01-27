@@ -1,6 +1,7 @@
 # Custom
 /data/*
 !/data/.gitkeep
+!/data/*.png
 /fnocg
 
 # Byte-compiled / optimized / DLL files

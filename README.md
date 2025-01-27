@@ -1,13 +1,14 @@
 # NFDI Demonstrator
 
-This repository contains the NFDI-Matwerk demonstrator by the Heisenberg Professorship Data Analytics Engineering at the University of Stuttgart.
+This repository contains the NFDI-Matwerk demonstrator by the Heisenberg Professorship Data Analytics in Engineering at the University of Stuttgart.
 
 While it is assumed in many applications that components are characterized by a homogeneous microstructure, this is not always the case.
 In fact, materials often exhibit heterogeneities, which can affect the material behavior drastically.
 In computational homogenization, the overall goal is to determine the effective material behavior of a heterogeneous material based on a given microstructure using numerical simulations.
+
 This demonstrator showcases a thermal homogenization problem of a 2D microstructure.
 An interactive widget allows the user to play around with different parameters of the homogenization problem and solves it in near real-time (<10ms on state-of-the-art GPUs) to observe their implications.
-In the background, a high-fidelity simulation using the Finite Element Method (FEM) on a 400x400 grid (given directly by the microstructure) is carried out with a GPU-accelerated implementation of our *FANS-CG* solver that features a special FFT-based preconditioner tailored to this problem.
+Behind the scenes, a high-fidelity simulation using the Finite Element Method (FEM) on a 400x400 grid (given directly by the microstructure) is carried out with a GPU-accelerated implementation of our *FANS-CG* solver that features a special FFT-based preconditioner tailored to this problem.
 
 ![Interactive widget](data/interactive-widget.png?raw=true "Interactive widget")
 
@@ -49,6 +50,7 @@ Or clone the repository and start the container automatically using `docker comp
 
 ```
 git clone https://github.com/DataAnalyticsEngineering/nfdi-demonstrator.git
+cd nfdi-demonstrator
 docker compose up
 ```
 
