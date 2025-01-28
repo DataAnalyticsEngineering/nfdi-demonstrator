@@ -22,11 +22,9 @@ While this demonstrator is meant to run on a GPU (ideally recent NVIDIA architec
 
 1. Install dependencies
 
-This demonstrator requires a Python installation with version >=3.11. The Python version can be changed easily, e.g., by using [`pyenv`](https://github.com/pyenv/pyenv).
-
-Since this demonstrator is based on PyTorch, the prerequisites on <https://pytorch.org/get-started/locally/> apply.
-
-To compile the PyTorch model a C++ compiler is required. For this, the `build-essential` package on Ubuntu is enough, for example.
+- This demonstrator requires a Python installation with version >=3.11. The Python version can be changed, e.g., using [`pyenv`](https://github.com/pyenv/pyenv).
+- Since this demonstrator is based on PyTorch, the prerequisites on <https://pytorch.org/get-started/locally/> apply.
+- Optional: To compile the PyTorch model, a C++ compiler is required. On Ubuntu, the `build-essential` package is enough.
 
 2. Clone repository
 
@@ -82,18 +80,18 @@ Note that the underlying the base image by NVIDIA is rather large in size.
 
 **Affiliation**
 
-Heisenberg Professorship Data Analytics in Engineering
+> Heisenberg Professorship Data Analytics in Engineering
+> 
+> Institute of Applied Mechanics
+> 
+> University of Stuttgart
+> 
+> Universitätsstr. 32, 70569 Stuttgart
+> 
+> https://www.mib.uni-stuttgart.de/dae
 
-Institute of Applied Mechanics
+**Funding acknowledgments**
 
-University of Stuttgart
-
-Universitätsstr. 32, 70569 Stuttgart
-
-https://www.mib.uni-stuttgart.de/dae
-
->**Funding acknowledgments**
->>
 >- Contributions by Felix Fritzen are partially funded by Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany’s Excellence Strategy - EXC 2075 – 390740016. Felix Fritzen is funded by Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) within the Heisenberg program DFG-FR2702/8 - 406068690 and DFG-FR2702/10 - 517847245.
 >
 >- Contributions of Julius Herb are partially funded by the Ministry of Science, Research and the Arts (MWK) Baden-Württemberg, Germany, within the Artificial Intelligence Software Academy (AISA).
