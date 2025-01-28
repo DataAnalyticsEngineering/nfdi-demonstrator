@@ -160,3 +160,26 @@ def warmup_model(model, device, dtype, n_iter=3):
             model(param_field, loading)
             if device != "cpu":
                 torch.cuda.synchronize()
+
+def get_sym_indices(dim):
+    diag_idx = (torch.arange(dim), torch.arange(dim))    
+    row, col = torch.tril_indices(dim, dim, -1)
+    dof_idx = (torch.cat([diag_idx[0], row]), torch.cat([diag_idx[1], col]))
+    return dof_idx
+
+def pack_sym(symmetric_matrix, dim, dof_idx=None):
+    if dof_idx is None:
+        dof_idx = get_sym_indices(dim)
+    dof_idx = tuple(idx.to(symmetric_matrix.device) for idx in dof_idx)
+    return symmetric_matrix[(..., *dof_idx) if symmetric_matrix.dim() == 3 else dof_idx]
+
+def unpack_sym(packed_values, dim, dof_idx=None):
+    if dof_idx is None:
+        dof_idx = get_sym_indices(dim)
+    dof_idx = tuple(idx.to(packed_values.device) for idx in dof_idx)
+    matrix = torch.zeros((*packed_values.shape[:-1], dim, dim), dtype=packed_values.dtype, device=packed_values.device)
+    if packed_values.dim() == 2:
+        matrix[:, dof_idx[0], dof_idx[1]] = packed_values
+        return matrix + matrix.transpose(1, 2) - torch.diag_embed(torch.diagonal(matrix, dim1=1, dim2=2))
+    matrix[dof_idx] = packed_values
+    return matrix + matrix.T - torch.diag(torch.diag(matrix))
