@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 import urllib.request
+from feature_engineering import feature_extraction
 
 
 class MicrostructureImageDataset(Dataset):
@@ -160,6 +161,14 @@ def warmup_model(model, device, dtype, n_iter=3):
             model(param_field, loading)
             if device != "cpu":
                 torch.cuda.synchronize()
+
+def get_surrogate_features(param_field):
+    kappa0, kappa1 = param_field.min().item(), param_field.max().item()
+    R = kappa0/kappa1       # Phase contrast ratio
+    
+    image = (param_field == kappa1).float().cpu().numpy().squeeze(0)
+    features = feature_extraction.full_computation(image)
+    return torch.tensor(np.append(features, [[1/R, R]], axis=1))
 
 def get_sym_indices(dim):
     diag_idx = (torch.arange(dim), torch.arange(dim))    

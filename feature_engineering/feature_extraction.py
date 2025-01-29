@@ -279,29 +279,29 @@ def full_computation( images, phase_contrasts=[5]):
     edge_kernels.append( np.flip(edge_kernels[-1], axis=0) )
     edge_kernels = [ kernel/ np.abs( kernel).sum() for kernel in edge_kernels]
     edge_kernels = [ fftn( embed_kernel( kernel, resolution)) for kernel in edge_kernels]
-    tic( 'rb loading and processing' )
+    #tic( 'rb loading and processing' )
     basis = DarusLoader().get_basis()
     for i in range( n_xi ):
         basis[:,i] = fftn( basis[:,i].reshape( resolution) ).flatten().real
     basis[0,:] = 0 #enforce 0 mean below in projection
-    toc( 'rb loading and processing' )
+    #toc( 'rb loading and processing' )
 
-    tic( f'full feature computation of {n_samples} samples', silent=False )
-    tic( 'fft', silent=True)
+    #tic( f'full feature computation of {n_samples} samples', silent=False )
+    #tic( 'fft', silent=True)
     fourier = np.zeros( (n_samples, *resolution), dtype=complex )
     for i in range( n_samples):
         fourier[i] = fftn( images[i] ) 
-    toc( 'fft')
+    #toc( 'fft')
     ### Volume fraction
     vol = images.mean(1).mean(1)
     feature_vector.append( vol[:,None])
     ###  the pcf is rescaled to 
     pcf_scaling = (vol * n_voxels**2 )[:,None,None]
-    tic( 'xi computation' , silent=True)
+    #tic( 'xi computation' , silent=True)
     feature_vector.append( ( (fourier*np.conj(fourier)/pcf_scaling ).reshape( n_samples, -1) @ basis).real )
-    toc( 'xi computation' )
+    #toc( 'xi computation' )
     ### 
-    tic( 'band features' , silent=True)
+    #tic( 'band features' , silent=True)
     band_features = np.zeros( (n_samples, 2*n_angles ) )
     for j in range( n_angles):
       for i in range( n_samples):
@@ -309,17 +309,17 @@ def full_computation( images, phase_contrasts=[5]):
         band_features[i, 2*j ]  = feature.max() 
         band_features[i, 2*j+1] = (1-feature.min()) 
     feature_vector.append( band_features)
-    toc( 'band features' )
+    #toc( 'band features' )
     ###
-    tic( 'projected edges' , silent=True)
+    #tic( 'projected edges' , silent=True)
     feature_vector.append( projected_wall( images ) )
-    toc( 'projected edges' )
+    #toc( 'projected edges' )
     ###
-    tic( 'local volume' , silent=True)
+    #tic( 'local volume' , silent=True)
     feature_vector.append( vol_distribution( images ) )
-    toc( 'local volume' )
+    #toc( 'local volume' )
     ### 
-    tic( 'edge distributions' , silent=True)
+    #tic( 'edge distributions' , silent=True)
     features = np.zeros( (n_samples, 3*len( edge_kernels) ) )
     for i in range( n_samples):
         for j in range( len( edge_kernels)):
@@ -330,9 +330,9 @@ def full_computation( images, phase_contrasts=[5]):
             features[i,3*j+2] = skew( feature_grid, axis=None) 
     feature_vector.append( features)
     ###
-    toc( 'edge distributions' )
-    toc( f'full feature computation of {n_samples} samples' )
-    print( 'length of each feature type:', [x.shape for x in feature_vector] )
+    #toc( 'edge distributions' )
+    #toc( f'full feature computation of {n_samples} samples' )
+    #print( 'length of each feature type:', [x.shape for x in feature_vector] )
     feature_vector = np.concatenate( feature_vector, axis=1)
     ### add the phase contrast as int feature if requested
     if isinstance( phase_contrasts, list) and len( phase_contrasts) > 1:

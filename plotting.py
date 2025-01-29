@@ -11,9 +11,10 @@ from utils import get_param_fields
 
 
 class ThermalWidget:
-    def __init__(self, samples, model, dtype=torch.float64, show_colorbars=True, figsize=[9,8], dpi=120, device="cpu"):
+    def __init__(self, samples, model, surrogate=None, dtype=torch.float64, show_colorbars=True, figsize=[9,8], dpi=120, device="cpu"):
         self.samples = samples
         self.model = model
+        self.surrogate = surrogate
         self.device = device
         self.dtype = dtype
         self.args = {"device": self.device, "dtype": self.dtype}
