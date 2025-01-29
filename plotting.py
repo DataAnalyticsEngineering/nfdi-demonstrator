@@ -51,10 +51,14 @@ class ThermalWidget:
         min_param, max_param = 0.1, 1.0
         self.line_kappa0 = plt.Line2D((min_param, min_param), (-1.0,1.0), color='b')
         self.line_kappa1 = plt.Line2D((max_param, max_param), (-1.0,1.0), color='b')
+        self.line_pred0 = plt.Line2D((min_param, min_param), (-1.0,1.0), color='m', linestyle="--", zorder=1000)
+        self.line_pred1 = plt.Line2D((max_param, max_param), (-1.0,1.0), color='m', linestyle="--", zorder=1000)
         self.line_reuss = plt.Line2D((min_param, min_param), (-1.0,1.0), color='g')
         self.line_voigt = plt.Line2D((max_param, max_param), (-1.0,1.0), color='g')
         self.line_eig0 = plt.Line2D((min_param, min_param), (-1.0,1.0), color='r')
         self.line_eig1 = plt.Line2D((max_param, max_param), (-1.0,1.0), color='r')
+        ax_kappa.add_line(self.line_pred0)
+        ax_kappa.add_line(self.line_pred1)
         ax_kappa.add_line(self.line_kappa0)
         ax_kappa.add_line(self.line_kappa1)
         ax_kappa.add_line(self.line_reuss)
@@ -62,8 +66,8 @@ class ThermalWidget:
         ax_kappa.add_line(self.line_eig0)
         ax_kappa.add_line(self.line_eig1)
         ax_kappa.set(xlim=(min_param - 0.1, max_param + 0.1), ylim=(-1, 1))
-        ax_kappa.legend([self.line_kappa1, self.line_reuss, self.line_eig0, self.line_eig1, self.line_voigt, self.line_kappa0],
-                   [r"$\kappa_1$", "Reuss bound", r"$\lambda_1(\bar{\boldsymbol{\kappa}})$", r"$\lambda_2(\bar{\boldsymbol{\kappa}})$", "Voigt bound", r"$\kappa_0$"],
+        ax_kappa.legend([self.line_kappa1, self.line_reuss, self.line_eig0, self.line_pred0, self.line_voigt, self.line_kappa0],
+                   [r"$\kappa_1$", "Reuss bound", r"$\lambda_{1,2}(\bar{\boldsymbol{\kappa}})$", r"$\lambda_{1,2}(\bar{\boldsymbol{\kappa}}_{\mathrm{pred}})$", "Voigt bound", r"$\kappa_0$"],
                    ncol=6, mode="expand", borderaxespad=0., bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', fancybox=True)
         self.fig.canvas.toolbar_visible = False
         self.fig.canvas.header_visible = False
@@ -99,6 +103,15 @@ class ThermalWidget:
             kappa_bar = -hom_flux @ loading.inverse()
             eig_kappa = torch.linalg.eigvals(kappa_bar).real.cpu()
         postpro_time = (time.time() - start) * 1000.0
+
+        if self.surrogate is not None:
+            start = time.time()
+            with torch.inference_mode():
+                kappa_pred = self.surrogate(param_field.unsqueeze(0)).squeeze()
+                eig_pred = torch.linalg.eigvals(kappa_pred).real.cpu()
+                if self.device != "cpu":
+                    torch.cuda.synchronize()
+            surrogate_time = (time.time() - start) * 1000.0
         
         start = time.time()
         self.line_kappa0.set_xdata([1.0, 1.0])
@@ -107,6 +120,8 @@ class ThermalWidget:
         self.line_voigt.set_xdata([voigt, voigt])
         self.line_eig0.set_xdata([eig_kappa[0], eig_kappa[0]])
         self.line_eig1.set_xdata([eig_kappa[1], eig_kappa[1]])
+        self.line_pred0.set_xdata([eig_pred[0], eig_pred[0]])
+        self.line_pred1.set_xdata([eig_pred[1], eig_pred[1]])
         self.cax_temp0.set_data(temp[0,0].T)
         self.cax_flux0.set_data(flux_norm[0,0].T)
         self.cax_temp1.set_data(temp[0,1].T)
@@ -118,7 +133,7 @@ class ThermalWidget:
         self.fig.canvas.draw()
         plot_time = (time.time() - start) * 1000.0
         if print_times:
-            print(f"Times: preprocessing {prepro_time:.4f}ms, simulation {compute_time:.4f}ms, postprocessing {postpro_time:.4f}ms, plotting {plot_time:.4f}ms")
+            print(f"Times: preprocessing {prepro_time:.4f}ms, simulation {compute_time:.4f}ms, postprocessing {postpro_time:.4f}ms, surrogate {surrogate_time:.4f}ms, plotting {plot_time:.4f}ms")
 
 
 def plot_channel(
